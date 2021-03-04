@@ -16,12 +16,13 @@ console.log(unique(values)); // Hare, Krishna, :-O
 function aclean(arr) {
     let letters_to_word = new Map();
     for (let word of arr) {
-        let word_lower = word.toLowerCase();
-        let letters = Array.from(word_lower)
-            .sort((a, b) => a.codePointAt(0) - b.codePointAt(0))
+        let sorted_letters = word
+            .toLowerCase()
+            .split('')
+            .sort()
             .join('');
-        if (!letters_to_word.has(letters)) {
-            letters_to_word.set(letters, word);
+        if (!letters_to_word.has(sorted_letters)) {
+            letters_to_word.set(sorted_letters, word);
         }
     }
     return Array.from(letters_to_word.values());
