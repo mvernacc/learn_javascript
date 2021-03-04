@@ -96,3 +96,97 @@ powerCalc.addMethod("**", (a, b) => a ** b);
 
 let result = powerCalc.calculate("2 ** 3");
 console.log(`Calculator result = ${result}`); // 8
+
+
+// Map to names
+let john = { name: "John", age: 25 };
+let pete = { name: "Pete", age: 30 };
+let mary = { name: "Mary", age: 28 };
+
+let users = [ john, pete, mary ];
+
+let names = users.map((user) => user.name);
+
+console.log(`Map to names: ${names}`); // John, Pete, Mary
+
+
+// Sort users by age
+function sortByAge(arr) {
+    return arr.sort((user_a, user_b)  => user_a.age - user_b.age);
+}
+sortByAge(users);
+console.log(`Sort by age: ${users.map(user => user.name)}`); // John, Mary, Pete
+
+
+// Shuffle an array
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+}
+
+arr = [1, 2, 3];
+shuffle(arr);
+console.log(`Shuffle: ${arr}`);
+shuffle(arr);
+console.log(`Shuffle: ${arr}`);
+
+
+// Get average age
+function getAverageAge(arr) {
+    return arr.reduce(
+        (accumulator, item) => accumulator + item.age,
+        0
+    ) / arr.length;
+}
+console.log(`Average age: ${getAverageAge(users)}`); // 27.6666...
+
+
+// Filter unique array members
+function unique(arr) {
+    return arr.reduce(
+        (accumulator, item) => {
+            if (!accumulator.includes(item)) accumulator.push(item);
+            return accumulator;
+        },
+        []
+    );
+}
+  
+let strings = ["Hare", "Krishna", "Hare", "Krishna",
+    "Krishna", "Krishna", "Hare", "Hare", ":-O"
+];
+  
+console.log(`unique: ${unique(strings)}` ); // Hare, Krishna, :-O
+
+
+// Create keyed object from array
+function groupById(users) {
+    return users.reduce(
+        (accumulator, item) => {
+            accumulator[item.id] = item;
+            return accumulator
+        },
+        {}
+    );
+}
+
+users = [
+    {id: 'john', name: "John Smith", age: 20},
+    {id: 'ann', name: "Ann Smith", age: 24},
+    {id: 'pete', name: "Pete Peterson", age: 31},
+];
+
+let usersById = groupById(users);
+console.log(`Group by ID: ${usersById}`);
+
+/*
+// after the call we should have:
+
+usersById = {
+john: {id: 'john', name: "John Smith", age: 20},
+ann: {id: 'ann', name: "Ann Smith", age: 24},
+pete: {id: 'pete', name: "Pete Peterson", age: 31},
+}
+*/
