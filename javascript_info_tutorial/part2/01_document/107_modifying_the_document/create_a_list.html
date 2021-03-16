@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <ol id="list">
+  </ol>
+  
+  <script>
+    while (true) {
+      let text = prompt('New list item:', '');
+      if (text ===  null) break;
+      let li = document.createElement('li');
+      li.textContent = text;
+      list.append(li);
+    }
+  </script>
+</body>
+</html>
