@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="corners_files/index.css">
+  <script>
+    document.onclick = function(e) { // shows click coordinates
+      coords.innerHTML = e.clientX + ':' + e.clientY;
+    };
+  </script>
+</head>
+
+<body>
+
+  Click anywhere to get window coordinates.
+  <br> That's for testing, to check the result you get by JavaScript.
+  <br>
+  <div id="coords">701:337</div>
+
+
+  <div id="field">
+    . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+ . . . . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+ . . . . . . . . . . . . . . . . . . . . . . . . . .
+  </div>
+
+
+  <div class="triangle-right" style="left:-20px;top:-176px">1</div>
+  <div class="triangle-right" style="left:-10px;top:-178px">3</div>
+  <div class="triangle-right" style="left:190px;top:-40px">4</div>
+  <div class="triangle-right" style="left:200px;top:-42px">2</div>
+
+
+  <script>
+    let outerRect = field.getBoundingClientRect();
+
+    let upperLeftOuterX = outerRect.x;
+    let upperLeftOuterY = outerRect.y;
+    console.log(`Upper left outer: ${upperLeftOuterX}, ${upperLeftOuterY}`);
+
+    let bottomRightOuterX = outerRect.right;
+    let bottomRightOuterY = outerRect.bottom;
+    console.log(`Bottom right outer: ${bottomRightOuterX}, ${bottomRightOuterY}`);
+
+    let upperLeftInnerX = upperLeftOuterX + field.clientLeft;
+    let upperLeftInnerY = upperLeftOuterY + field.clientTop;
+    console.log(`Upper left inner: ${upperLeftInnerX}, ${upperLeftInnerY}`);
+
+    let bottomRightInnerX = upperLeftInnerX + field.clientWidth;
+    let bottomRightInnerY = upperLeftInnerY + field.clientHeight;
+    console.log(`Bottom right inner: ${bottomRightInnerX}, ${bottomRightInnerY}`);
+
+
+
+
+  </script>
+
+
+
+</body></html>
