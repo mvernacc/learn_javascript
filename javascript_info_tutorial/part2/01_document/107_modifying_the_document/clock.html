@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <style>
+    #clock .hour {
+      color: red;
+    }
+    #clock .minute {
+      color: green;
+    }
+    #clock .second {
+      color: blue;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="clock">
+    <span class="hour"></span>:<span class="minute"></span>:<span class="second"></span>
+  </div>
+
+  <!-- click on this button calls clockStart() -->
+  <input type="button" onclick="clockStart()" value="Start">
+
+  <!-- click on this button calls clockStop() -->
+  <input type="button" onclick="clockStop()" value="Stop">
+
+  <script src=clock.js></script>
+</body>
+</html>
