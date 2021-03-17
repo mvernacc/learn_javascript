@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    .collapsible-menu ul {
+      margin: 0;
+      list-style: none;
+      padding-left: 20px;
+      display: none;
+    }
+
+    .collapsible-menu .title::before {
+      content: '▶ ';
+      font-size: 80%;
+      color: green;
+    }
+
+    .collapsible-menu.open .title::before {
+      content: '▼ ';
+    }
+
+    .collapsible-menu.open ul {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<div class="collapsible-menu">
+  <span class="title">Sweeties (click me)!</span>
+  <ul>
+    <li>Cake</li>
+    <li>Donut</li>
+    <li>Honey</li>
+  </ul>
+</div>
+
+<script>
+  function toggleCollapse() {
+    let menu = this.parentElement;
+    menu.classList.toggle('open');
+  }
+
+  let title = document.querySelector('.collapsible-menu .title');
+  title.addEventListener('click', toggleCollapse);
+
+</script>
+</body>
+</html>
