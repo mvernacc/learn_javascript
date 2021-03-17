@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <style>
+    #field {
+      width: 200px;
+      height: 150px;
+      border: 10px solid black;
+      background-color: #00FF00;
+      overflow: hidden;
+      position: relative;
+    }
+    #ball {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 40px;
+      height: 40px;
+      transition: 1s all;
+    }
+  </style>
+</head>
+
+<body style="height:2000px">
+
+  Click on a field to move the ball there.
+  <br> The ball should never leave the field.
+
+
+  <div id="field">
+    <img src="https://en.js.cx/clipart/ball.svg" id="ball"> . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+  </div>
+
+  <script>
+    function moveBall(event) {
+      fieldCoords = field.getBoundingClientRect();
+      // Click location, relative to left-top inner corner of field.
+      let clickInField = [
+        event.clientX - fieldCoords.left - field.clientLeft,
+        event.clientY - fieldCoords.top - field.clientTop
+      ];
+
+      ball.style.left = Math.max(
+        Math.min(
+          clickInField[0] - ball.clientWidth / 2,
+          field.clientWidth - ball.clientWidth
+        ),
+        0
+      ) + 'px';
+      ball.style.top = Math.max(
+        Math.min(
+          clickInField[1] - ball.clientHeight / 2,
+          field.clientHeight - ball.clientHeight
+        ),
+        0
+      ) + 'px';
+    }
+
+    field.addEventListener("click", moveBall);
+  </script>
+
+
+</body>
+</html>
