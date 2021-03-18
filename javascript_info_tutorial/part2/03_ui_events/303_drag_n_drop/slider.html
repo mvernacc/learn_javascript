@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div id="slider" class="slider">
+    <div class="thumb"></div>
+  </div>
+
+  <script>
+    thumb = slider.querySelector('.thumb');
+
+    thumb.onmousedown = function (event) {
+      event.preventDefault();
+      let shiftX = event.clientX - thumb.getBoundingClientRect().left;
+
+      function moveSlider(x) {
+        x = Math.min(
+          Math.max(x, 0),
+          slider.clientWidth - thumb.offsetWidth
+        );
+        thumb.style.left = x + 'px';
+      }
+
+      function onMouseMove(event) {
+        moveSlider(event.pageX - slider.clientLeft - shiftX);
+      }
+
+      function onMouseUp() {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    };
+
+    thumb.ondragstart = () => false;
+  </script>
+
+</body>
+</html>
