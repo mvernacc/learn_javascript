@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+  function runOnKeys(func, ...codesToTrigger) {
+    let codesCurrentlyDown = new Set();
+  
+    document.addEventListener('keydown',
+      function (event) {
+        codesCurrentlyDown.add(event.code);
+        if (codesToTrigger.every(code => codesCurrentlyDown.has(code))) {
+          func();
+          codesCurrentlyDown.clear();
+        }
+      }
+    );
+
+    document.addEventListener('keyup',
+      function (event) {
+        codesCurrentlyDown.delete(event.code);
+      }
+    );
+  }
+
+  runOnKeys(
+    () => alert("Hello!"),
+    "KeyQ",
+    "KeyW"
+  );
+</script>
+</body>
+</html>
