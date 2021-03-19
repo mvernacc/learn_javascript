@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<select id="genres">
+  <option value="rock">Rock</option>
+  <option value="blues" selected>Blues</option>
+</select>
+
+<script>
+  alert(genres.value);
+  genres.add(new Option(
+    'Classic', 'classic', true, true
+  ));
+</script>
+
+</body>
+</html>
