@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <h1>Click the button below</h1>
+
+  <button onclick="showForm()">Click to show the form</button>
+
+
+  <div id="prompt-form-container">
+    <form id="prompt-form">
+      <div id="prompt-message">Enter something...
+        <br>Please..</div>
+      <input name="text" type="text">
+      <input type="submit" value="Ok">
+      <input type="button" name="cancel" value="Cancel">
+    </form>
+  </div>
+
+<script>
+  let promptFormContainer = document.querySelector('#prompt-form-container');
+  let promptForm = document.querySelector('#prompt-form');
+  promptFormContainer.remove();
+
+  function showPrompt(html, callback) {
+    promptForm.elements.text.value = '';
+    promptForm.querySelector('#prompt-message').innerHTML = html;
+  
+    function abort(event) {
+      if (event.type == 'keydown' && event.key != 'Escape') return;
+      callback(null);
+      hideForm();
+      document.removeEventListener('keydown', abort);
+    }
+
+    function submit() {
+      callback(promptForm.elements.text.value);
+      hideForm();
+      document.removeEventListener('keydown', abort);
+    }
+    
+    promptForm.elements.cancel.addEventListener('click', abort);
+    document.addEventListener('keydown', abort);
+
+    promptForm.addEventListener('submit', submit);
+  }
+
+  function showForm() {
+    document.body.append(promptFormContainer);
+  }
+
+  function hideForm() {
+    promptFormContainer.remove();
+  }
+
+  showPrompt("Enter something<br>...smart :)", function(value) {
+    alert(value);
+  });
+
+
+</script>
+</body>
+
+</html>
