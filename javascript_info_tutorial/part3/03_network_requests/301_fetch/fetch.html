@@ -10,10 +10,14 @@
         // Attempt to get a JSON object for each user from github.
         names.map(name => {
           return fetch(GITHUB_USER_URL_BASE + name)
-            .then(response => response.json());
+            .then(response => {
+              if (!response.ok) return null;
+              return response.json();
+            });
         })
       ).then(results => results.map(result => {
           if (result.status == 'rejected') return null;
+          if (result.value === null) return null;
           if (result.value.message == 'Not Found') return null;
           return result.value;
         })
