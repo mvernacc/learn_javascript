@@ -11,9 +11,27 @@ function createAudioContext(stream: MediaStream) {
         () => {
             analyser.getByteFrequencyData(dataArray);
             console.log(dataArray);
+            drawSpectogram(dataArray);
         },
         30
     );
+}
+
+function drawSpectogram(dataArray: Uint8Array) {
+    let canvasCtx = (<HTMLCanvasElement>document.getElementById('spectrogram-canvas')).getContext('2d');
+    if (canvasCtx === null) return;
+
+    let canvasWidth = 500;
+    let canvasHeight = 500;
+
+    canvasCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+    let dy = canvasHeight / dataArray.length;
+    let y = 0;
+    for (let i = 0; i < dataArray.length; i++) {
+        canvasCtx.fillStyle = `rgb(${dataArray[i]},0,0)`;
+        canvasCtx.fillRect(0, y, 20, dy);
+        y +=dy;
+    }
 }
 
 let constraints = {audio: true};
