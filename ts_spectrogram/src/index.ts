@@ -1,4 +1,3 @@
-// import CBuffer = require('CBuffer');
 import CBuffer from 'CBuffer';
 
 function createAudioContext(stream: MediaStream) {
