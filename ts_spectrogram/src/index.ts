@@ -5,6 +5,7 @@ function createAudioContext(stream: MediaStream) {
     let audioContext = new AudioContext();
     let source = audioContext.createMediaStreamSource(stream);
     let analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256;
     source.connect(analyser);
 
     const numTimesteps = 20;
@@ -24,21 +25,20 @@ function createAudioContext(stream: MediaStream) {
 }
 
 function drawSpectogram(audioFreqPowerHistory: CBuffer<Uint8Array>) {
-    let canvasCtx = (<HTMLCanvasElement>document.getElementById('spectrogram-canvas')).getContext('2d');
+    const canvas = <HTMLCanvasElement> document.getElementById('spectrogram-canvas')!;
+    let canvasCtx = canvas.getContext('2d');
     if (canvasCtx === null) return;
 
-    let canvasWidth = 500;
-    let canvasHeight = 500;
-
-    canvasCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+    canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
     const timeNumBins = audioFreqPowerHistory.length;
     const freqNumBins = audioFreqPowerHistory.first()!.length;
-    const dx = canvasWidth / timeNumBins;
-    const dy = canvasHeight / freqNumBins;
+    const dx = canvas.width / timeNumBins;
+    const dy = canvas.height / freqNumBins;
     let x = 0;
     let y = 0;
     for (let timeIndex = 0; timeIndex < timeNumBins; timeIndex++) {
         const audioFreqPower = audioFreqPowerHistory.get(timeIndex)!;
+        y = 0;
         for (let freqIndex = 0; freqIndex < freqNumBins; freqIndex++) {
             canvasCtx.fillStyle = `rgb(${audioFreqPower[freqIndex]},0,0)`;
             canvasCtx.fillRect(x, y, dx, dy);
