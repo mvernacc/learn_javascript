@@ -24,34 +24,44 @@ function createSpectrogram(stream: MediaStream) {
     // than there are pixels on the graph. Also fftSize must be a power of 2.
     const plotHeight = canvas.height - xAxisHeight;
     const log2pixels = Math.floor(Math.log2(plotHeight));
+    // Limit the FFT size so re-drawing doesn't get too slow.
     analyser.fftSize = Math.min(
-        Math.max(2**(log2pixels + 1), 16), 8192
+        Math.max(2**(log2pixels + 1), 16), 1024
     );
     console.log(`Using FFT size of ${analyser.fftSize}`);
 
     // Create the circular buffers that will store the audio data.
-    const targetPixelsPerTimestep = 25;
+    const targetPixelsPerTimestep = 5;
     const plotWidth = canvas.width - yAxisWidth;
-    const numTimesteps = Math.round(plotWidth / targetPixelsPerTimestep);
-    const timeStep = 0.030;  // seconds
+    // Limit the number of time steps so re-drawing doesn't get too slow.
+    const numTimesteps = Math.min(Math.round(plotWidth / targetPixelsPerTimestep), 128);
+    const timeStepMilliSecond = 10;
+    // Redraw every redrawInterval time steps.
+    const redrawInterval = 3;
     let timeStamps = new CBuffer<Date>(numTimesteps);
     let audioFreqPowerHistory = new CBuffer<Uint8Array>(numTimesteps);
     const now = new Date();
     for (let i = 0; i < numTimesteps; i++) {
-        timeStamps.push(new Date(now.getTime() - i * 1000 * timeStep));
+        timeStamps.push(new Date(now.getTime() - i * timeStepMilliSecond));
         audioFreqPowerHistory.push(new Uint8Array(analyser.frequencyBinCount));
     }
 
     drawYAxis(canvas, audioContext.sampleRate);
 
+    let redrawCounter = redrawInterval;
+
     function run() {
         timeStamps.unshift(new Date());
         audioFreqPowerHistory.rotateRight();
         analyser.getByteFrequencyData(audioFreqPowerHistory.first()!);
-        drawSpectogram(canvas, audioFreqPowerHistory, timeStamps);
+        if (redrawCounter == redrawInterval) {
+            drawSpectogram(canvas, audioFreqPowerHistory, timeStamps);
+            redrawCounter = 0;
+        }
+        redrawCounter++;
     }
 
-    let timerId: number | null = setInterval(run, 1000 * timeStep);
+    let timerId: number | null = setInterval(run, timeStepMilliSecond);
 
     let startStopButton = document.getElementById('start-stop')!;
     startStopButton.onclick = () => {
@@ -62,7 +72,8 @@ function createSpectrogram(stream: MediaStream) {
             startStopButton.innerHTML = 'Resume';
         } else {
             // Resume
-            timerId = setInterval(run, 1000 * timeStep);
+            redrawCounter = redrawInterval;
+            timerId = setInterval(run, timeStepMilliSecond);
             startStopButton.innerHTML = 'Pause';
         }
     }
@@ -152,7 +163,8 @@ function drawSpectogram(canvas: HTMLCanvasElement,
     // Ticks and tick labels
     canvasCtx.font = `${tickFontSizePx}px ${axisFont}`;
     const tickLength = 10;
-    for (let timeIndex = 0; timeIndex < timeNumBins; timeIndex++) {
+    const tickInterval = 10;
+    for (let timeIndex = tickInterval; timeIndex < timeNumBins; timeIndex += tickInterval) {
         x = canvas.width - (dx / 2) - (timeIndex * dx);
         canvasCtx.save();
         canvasCtx.translate(x, plotHeight);
