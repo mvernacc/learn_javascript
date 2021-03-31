@@ -2,10 +2,22 @@
 <html>
   <head>
     <title>Spectrogram</title>
+    <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <canvas id="spectrogram-canvas" width="500" height="500"></canvas>
-    <button id="start-stop">Pause</button>
+    <div class="main">
+      <h1>Spectrogram</h1>
+      <p>
+        Made with <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener noreferrer">TypeScript</a>,
+        the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API" target="_blank" rel="noopener noreferrer">WebAudio API</a>,
+        and the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API" target="_blank" rel="noopener noreferrer">Canvas API</a>.
+      </p>
+      <div id="spectrogram-div">
+        <canvas id="spectrogram-canvas"></canvas>
+      </div>
+      <br>
+      <button id="start-stop">Pause</button>
+    </div>
     <script type="module" src="../out/index.js"></script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 import CBuffer from 'CBuffer';
 
-function createAudioContext(stream: MediaStream) {
+function createSpectrogram(stream: MediaStream) {
     let audioContext = new AudioContext();
     let source = audioContext.createMediaStreamSource(stream);
     let analyser = audioContext.createAnalyser();
@@ -8,6 +8,7 @@ function createAudioContext(stream: MediaStream) {
     analyser.smoothingTimeConstant = 0;
     source.connect(analyser);
 
+    // Create the circular buffers that will store the audio data
     const numTimesteps = 20;
     const timeStep = 0.030;  // seconds
     let timeStamps = new CBuffer<Date>(numTimesteps);
@@ -18,7 +19,11 @@ function createAudioContext(stream: MediaStream) {
         audioFreqPowerHistory.push(new Uint8Array(analyser.frequencyBinCount));
     }
 
-    const canvas = <HTMLCanvasElement> document.getElementById('spectrogram-canvas')!;
+    let canvas = <HTMLCanvasElement> document.getElementById('spectrogram-canvas')!;
+    // Resize the canvas's drawing buffer.
+    canvas.width = Math.round(canvas.parentElement!.clientWidth);
+    canvas.height = Math.round(canvas.parentElement!.clientHeight);
+
     drawYAxis(canvas, audioContext.sampleRate, analyser.frequencyBinCount);
 
     function run() {
@@ -48,9 +53,15 @@ function createAudioContext(stream: MediaStream) {
 
 const yAxisWidth = 50; // pixels
 const xAxisHeight = 80; // pixels
+const axisColor = '#eee';
+const axisFont = 'sans-serif';
+const axisFontSizePx = 14;
+const tickFontSizePx = 10;
 
 function drawYAxis(canvas: HTMLCanvasElement, sampleRate: number, frequencyBinCount: number) {
     let canvasCtx = canvas.getContext('2d')!;
+    canvasCtx.fillStyle = axisColor;
+    canvasCtx.strokeStyle = axisColor;
     const plotHeight = canvas.height - xAxisHeight;
 
     // Axis label
@@ -58,6 +69,7 @@ function drawYAxis(canvas: HTMLCanvasElement, sampleRate: number, frequencyBinCo
     canvasCtx.translate(10, canvas.height / 2);
     canvasCtx.rotate(-Math.PI/2);
     canvasCtx.textAlign = "center";
+    canvasCtx.font = `${axisFontSizePx}px ${axisFont}`;
     canvasCtx.fillText("Frequency [kHz]", 0, 0);
     canvasCtx.restore();
 
@@ -69,6 +81,7 @@ function drawYAxis(canvas: HTMLCanvasElement, sampleRate: number, frequencyBinCo
         .map(x => tickSpacingHertz * x);
     canvasCtx.save();
     canvasCtx.textAlign = "right";
+    canvasCtx.font = `${tickFontSizePx}px ${axisFont}`;
     const tickLength = 10;
     for (const f of tickFreqs) {
         const y = plotHeight - f * pixelPerHertz;
@@ -120,10 +133,14 @@ function drawSpectogram(canvas: HTMLCanvasElement,
 
     // Update the time axis.
     canvasCtx.clearRect(0, plotHeight, canvas.width, xAxisHeight);
+    canvasCtx.fillStyle = axisColor;
+    canvasCtx.strokeStyle = axisColor;
     // Axis label
     canvasCtx.textAlign = "center";
+    canvasCtx.font = `${axisFontSizePx}px ${axisFont}`;
     canvasCtx.fillText("Time [min:sec]", canvas.width / 2, canvas.height - 10);
     // Ticks and tick labels
+    canvasCtx.font = `${tickFontSizePx}px ${axisFont}`;
     const tickLength = 10;
     for (let timeIndex = 0; timeIndex < timeNumBins; timeIndex++) {
         x = canvas.width - (dx / 2) - (timeIndex * dx);
@@ -145,6 +162,8 @@ function drawSpectogram(canvas: HTMLCanvasElement,
     }
 }
 
-let constraints = {audio: true};
-navigator.mediaDevices.getUserMedia(constraints)
-    .then(stream => createAudioContext(stream));
+window.onload = function() {
+    let constraints = {audio: true};
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => createSpectrogram(stream));
+}
