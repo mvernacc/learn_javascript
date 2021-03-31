@@ -1,15 +1,38 @@
 import CBuffer from 'CBuffer';
 
+// Spectrogram plot style constants.
+const yAxisWidth = 50; // pixels
+const xAxisHeight = 80; // pixels
+const axisColor = '#eee';
+const axisFont = 'sans-serif';
+const axisFontSizePx = 14;
+const tickFontSizePx = 10;
+
 function createSpectrogram(stream: MediaStream) {
+    let canvas = <HTMLCanvasElement> document.getElementById('spectrogram-canvas')!;
+    // Resize the canvas's drawing buffer.
+    canvas.width = Math.round(canvas.parentElement!.clientWidth);
+    canvas.height = Math.round(canvas.parentElement!.clientHeight);
+
     let audioContext = new AudioContext();
     let source = audioContext.createMediaStreamSource(stream);
     let analyser = audioContext.createAnalyser();
-    analyser.fftSize = 256;
     analyser.smoothingTimeConstant = 0;
     source.connect(analyser);
+    // Choose an appropriate FFT size for the size of the graph.
+    // frequencyBinCount is ffSize/2, and we don't want to have more frequency bins
+    // than there are pixels on the graph. Also fftSize must be a power of 2.
+    const plotHeight = canvas.height - xAxisHeight;
+    const log2pixels = Math.floor(Math.log2(plotHeight));
+    analyser.fftSize = Math.min(
+        Math.max(2**(log2pixels + 1), 16), 8192
+    );
+    console.log(`Using FFT size of ${analyser.fftSize}`);
 
-    // Create the circular buffers that will store the audio data
-    const numTimesteps = 20;
+    // Create the circular buffers that will store the audio data.
+    const targetPixelsPerTimestep = 25;
+    const plotWidth = canvas.width - yAxisWidth;
+    const numTimesteps = Math.round(plotWidth / targetPixelsPerTimestep);
     const timeStep = 0.030;  // seconds
     let timeStamps = new CBuffer<Date>(numTimesteps);
     let audioFreqPowerHistory = new CBuffer<Uint8Array>(numTimesteps);
@@ -18,11 +41,6 @@ function createSpectrogram(stream: MediaStream) {
         timeStamps.push(new Date(now.getTime() - i * 1000 * timeStep));
         audioFreqPowerHistory.push(new Uint8Array(analyser.frequencyBinCount));
     }
-
-    let canvas = <HTMLCanvasElement> document.getElementById('spectrogram-canvas')!;
-    // Resize the canvas's drawing buffer.
-    canvas.width = Math.round(canvas.parentElement!.clientWidth);
-    canvas.height = Math.round(canvas.parentElement!.clientHeight);
 
     drawYAxis(canvas, audioContext.sampleRate, analyser.frequencyBinCount);
 
@@ -48,15 +66,7 @@ function createSpectrogram(stream: MediaStream) {
             startStopButton.innerHTML = 'Pause';
         }
     }
-
 }
-
-const yAxisWidth = 50; // pixels
-const xAxisHeight = 80; // pixels
-const axisColor = '#eee';
-const axisFont = 'sans-serif';
-const axisFontSizePx = 14;
-const tickFontSizePx = 10;
 
 function drawYAxis(canvas: HTMLCanvasElement, sampleRate: number, frequencyBinCount: number) {
     let canvasCtx = canvas.getContext('2d')!;
@@ -110,7 +120,6 @@ function drawSpectogram(canvas: HTMLCanvasElement,
     let canvasCtx = canvas.getContext('2d')!;
     const plotWidth = canvas.width - yAxisWidth;
     const plotHeight = canvas.height - xAxisHeight;
-
 
     // Update the spectrogram itself.
     canvasCtx.clearRect(yAxisWidth, 0, plotWidth, plotHeight);
