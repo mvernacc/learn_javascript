@@ -42,7 +42,7 @@ function createSpectrogram(stream: MediaStream) {
         audioFreqPowerHistory.push(new Uint8Array(analyser.frequencyBinCount));
     }
 
-    drawYAxis(canvas, audioContext.sampleRate, analyser.frequencyBinCount);
+    drawYAxis(canvas, audioContext.sampleRate);
 
     function run() {
         timeStamps.unshift(new Date());
@@ -68,7 +68,7 @@ function createSpectrogram(stream: MediaStream) {
     }
 }
 
-function drawYAxis(canvas: HTMLCanvasElement, sampleRate: number, frequencyBinCount: number) {
+function drawYAxis(canvas: HTMLCanvasElement, sampleRate: number) {
     let canvasCtx = canvas.getContext('2d')!;
     canvasCtx.fillStyle = axisColor;
     canvasCtx.strokeStyle = axisColor;
