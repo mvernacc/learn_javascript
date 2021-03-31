@@ -21,15 +21,29 @@ function createAudioContext(stream: MediaStream) {
     const canvas = <HTMLCanvasElement> document.getElementById('spectrogram-canvas')!;
     drawYAxis(canvas, audioContext.sampleRate, analyser.frequencyBinCount);
 
-    setInterval(
-        () => {
-            timeStamps.unshift(new Date());
-            audioFreqPowerHistory.rotateRight();
-            analyser.getByteFrequencyData(audioFreqPowerHistory.first()!);
-            drawSpectogram(canvas, audioFreqPowerHistory, timeStamps);
-        },
-        1000 * timeStep
-    );
+    function run() {
+        timeStamps.unshift(new Date());
+        audioFreqPowerHistory.rotateRight();
+        analyser.getByteFrequencyData(audioFreqPowerHistory.first()!);
+        drawSpectogram(canvas, audioFreqPowerHistory, timeStamps);
+    }
+
+    let timerId: number | null = setInterval(run, 1000 * timeStep);
+
+    let startStopButton = document.getElementById('start-stop')!;
+    startStopButton.onclick = () => {
+        if (timerId !== null) {
+            // Pause
+            clearInterval(timerId);
+            timerId = null;
+            startStopButton.innerHTML = 'Resume';
+        } else {
+            // Resume
+            timerId = setInterval(run, 1000 * timeStep);
+            startStopButton.innerHTML = 'Pause';
+        }
+    }
+
 }
 
 const yAxisWidth = 50; // pixels
