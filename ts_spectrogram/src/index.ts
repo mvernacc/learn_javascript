@@ -122,6 +122,7 @@ function drawSpectogram(canvas: HTMLCanvasElement,
     const plotHeight = canvas.height - xAxisHeight;
 
     // Update the spectrogram itself.
+    canvasCtx.beginPath();
     canvasCtx.clearRect(yAxisWidth, 0, plotWidth, plotHeight);
     const timeNumBins = audioFreqPowerHistory.length;
     const freqNumBins = audioFreqPowerHistory.first()!.length;
